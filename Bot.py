@@ -338,17 +338,17 @@ COMMANDS = {
 def command_parser(input:str) -> tuple:
     clauses = []
     command = ""
+    args = []
     if input in GREET_COMMANDS:
         command = "greet" 
     else:
         clauses = input.split()
         if clauses:
-            command = clauses[0]  
-            args = []
+            command = clauses[0]              
             if len(clauses) > 0:
                 args = clauses[1:]
-            if command in COMMANDS.keys():
-                return COMMANDS[command], args
+    if command in COMMANDS.keys():
+        return COMMANDS[command], args
     
     return unknown_handler, []
 
