@@ -220,15 +220,13 @@ def capitalize_user_name(func):
     return inner
 
 def unknown_handler(*args) -> str:
-    return f"Unknown command. Use help: \n{help_handler(*args)}"
+    return f"Unknown command. Use help: \n{help_handler()(*args)}"
 
-def help_handler() -> str:
+def help_handler():
     help_txt = ""
-    def inner(*args):
-        global reads
+    def inner(*args) -> str:
         nonlocal help_txt
         if not help_txt:
-            reads += 1
             with open("help.txt") as file:            
                 help_txt = "".join(file.readlines())
         return help_txt
@@ -344,14 +342,13 @@ def command_parser(input:str) -> tuple:
         command = "greet" 
     else:
         clauses = input.split()
-        command = clauses[0]  
-     
-    args = []
-    if len(clauses) > 0:
-        args = clauses[1:]
-
-    if command in COMMANDS.keys():
-        return COMMANDS[command], args
+        if clauses:
+            command = clauses[0]  
+            args = []
+            if len(clauses) > 0:
+                args = clauses[1:]
+            if command in COMMANDS.keys():
+                return COMMANDS[command], args
     
     return unknown_handler, []
 
