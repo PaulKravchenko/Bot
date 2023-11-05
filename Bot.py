@@ -234,8 +234,8 @@ def help_handler() -> str:
         return help_txt
     return inner
 
-@input_error("name", "phone")
 @capitalize_user_name
+@input_error("name", "phone")
 def add_handler(*args) -> str:
     user_name = args[0]
     user_phones = args[1:]
@@ -253,8 +253,8 @@ def add_handler(*args) -> str:
             response.append(f"New phone number {user_phone} for contact {user_name} added.")
         return "\n".join(response)
 
-@input_error("name", "old_phone", "new_phone")
 @capitalize_user_name
+@input_error("name", "old_phone", "new_phone")
 def change_handler(*args) -> str:
     user_name = args[0]
     old_phone = args[1]
@@ -264,8 +264,8 @@ def change_handler(*args) -> str:
         record.edit_phone(old_phone, new_phone)
         return f"Phone number for {user_name} changed from {old_phone} to {new_phone}."
 
+@capitalize_user_name
 @input_error("name")
-@capitalize_user_name    
 def delete_handler(*args) -> str:
     user_name = args[0]
     user_phones = args[1:]
@@ -303,8 +303,8 @@ def greet_handler(num: int) -> str:
         return GREETING_RESPONSES[num]
     return inner_greet
 
-@input_error("name")
 @capitalize_user_name
+@input_error("name")
 def phone_handler(*args) -> str:
     user_name = args[0]
     record = records.find(user_name)
