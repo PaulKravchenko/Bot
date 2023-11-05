@@ -26,8 +26,9 @@ class Field():
     def __repr__(self) -> str:
         return self.__str__()
     
-    def is_matching(self, term) -> bool:
-        return term in self.value.lower()
+    def is_matching(self, *terms) -> bool:
+        matches = filter(lambda term: term in self.value.lower(), terms)
+        return len(list(matches)) > 0
 
 
 class Name(Field):
@@ -127,12 +128,12 @@ class Record:
         if len(existing_phone) > 0:
             return existing_phone[0]
     
-    def has_matching_phone (self, term:str) -> bool:
-        phones = filter(lambda p: p.is_matching(term), self.phones)
+    def has_matching_phone (self, *terms) -> bool:
+        phones = filter(lambda p: p.is_matching(*terms), self.phones)
         return list(phones)
 
-    def is_matching (self, term:str) -> bool:        
-        return self.name.is_matching(term) or self.has_matching_phone(term)
+    def is_matching (self, *terms) -> bool:        
+        return self.name.is_matching(*terms) or self.has_matching_phone(*terms)
         
 
 class AddressBook(UserDict):
@@ -160,8 +161,8 @@ class AddressBook(UserDict):
             yield list(map(lambda record: str(record), values[counter: counter + n]))
             counter += n
     
-    def search_contacts(self, term:str) -> list:
-        contacts = filter(lambda contact: contact.is_matching(term), self.data.values())
+    def search_contacts(self, *terms) -> list:
+        contacts = filter(lambda contact: contact.is_matching(*terms), self.data.values())
         return list(contacts)
 
     def __enter__(self):
@@ -310,13 +311,12 @@ def phone_handler(*args) -> str:
         return "; ".join(map(lambda phone: str(phone), record.phones))    
     return f"Record for contact {user_name} not found."
 
-@input_error("term")
-def search_handler(*args) -> str:
-    term = args[0]
-    contacts = records.search_contacts(term)
+@input_error("terms")
+def search_handler(*args) -> str:    
+    contacts = records.search_contacts(*args)
     if contacts:
         return "\n".join(map(lambda contact: str(contact), contacts))    
-    return f"No contacts found for '{term}'."
+    return f"No contacts found for '{' '.join(args)}'."
 
 @input_error([])
 def show_handler(*args) -> str:
