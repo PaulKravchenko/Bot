@@ -18,7 +18,7 @@ class Note:
     def __parse_tags(self, value):
         all_tags = re.findall(self.__tags_reg_exp, value)
         unique_tags = set(all_tags)
-        self.__tags = {tag.removeprefix("#"):all_tags.count(tag) for tag in unique_tags}
+        self.__tags = {tag.removeprefix("#").lower():all_tags.count(tag) for tag in unique_tags}
 
     @property
     def text(self):
@@ -71,9 +71,23 @@ class Notes (UserList, Serializable):
         if notes:
             return self.data.pop(self.data.index(notes[0]))
     
-    def search_notes(self, tag: str):
-        notes = list(filter(lambda note: tag in note.tags.keys(), self.data))
-        notes.sort(key=lambda note: note.tags[tag], reverse= True)
+    def search_notes(self, query:str): # "buy #car #birthday John john"
+        tags = set(re.findall(r"#\w+", query))        
+        terms = set(query.split()) - tags     
+        tags = set([tag.removeprefix("#") for tag in tags])
+        notes = self.data
+        all_queried_notes = []
+        all_tagged_notes = []
+        if terms:
+            for term in terms:
+                all_queried_notes += list(filter(lambda note: term.lower() in note.title.lower() or term.lower() in note.text.lower(), notes))
+            notes = list(set(all_queried_notes))
+        if tags:            
+            for tag in tags:                
+                tagged_notes = list(filter(lambda note: tag.lower() in note.tags.keys(), notes))
+                tagged_notes.sort(key=lambda note: note.tags[tag.lower()], reverse= True)
+                all_tagged_notes += tagged_notes
+            notes = all_tagged_notes        
         return self.iterator(notes=notes)
     
     def __getitem__(self, index):
