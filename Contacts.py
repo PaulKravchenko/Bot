@@ -102,6 +102,8 @@ class Record:
         self.birthday = Birthday(birthday)
 
     def days_to_birthday(self) -> int:
+        if not isinstance(self.birthday, Birthday):
+            return None
         next_birthday = self.birthday.date.replace(year=date.today().year)
         if next_birthday < date.today():
             next_birthday = next_birthday.replace(year=next_birthday.year+1)
@@ -166,5 +168,6 @@ class AddressBook(UserDict, Serializable):
         return list(contacts)
     
     def get_contacts_by_birthdays(self, days:int):
-        contacts = filter(lambda contact: contact.days_to_birthday() <= days, self.data.values())
+        contacts = filter(lambda contact: contact.days_to_birthday(), self.data.values())
+        contacts = filter(lambda contact: contact.days_to_birthday() <= days, contacts)
         return self.iterator(contacts=list(contacts))
