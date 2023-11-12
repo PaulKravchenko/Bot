@@ -186,7 +186,7 @@ def search_handler(*args) -> str:
     entity = args[0]
     term = ""
     if entity == "notes":
-        term = args[1]
+        term = " ".join(args[1:])
         result = notes.search_notes(term)   
         if result:
             return result 
